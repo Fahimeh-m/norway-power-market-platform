@@ -7,7 +7,7 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 1: Azure storage basics and first sample of real price data
 - [x] Day 2: Budget alert, Python script for all five price areas, daily run with GitHub Actions
 - [x] Day 3: Raw files stored in Azure Data Lake Storage, uploaded by the daily run
-- [ ] Automated tests
+- [x] Day 3: Data-quality tests in GitHub Actions, on every push and in the daily run
 - [ ] Add consumption and weather data
 - [ ] Bronze, silver and gold layers in Databricks
 - [ ] Price forecast compared with a simple baseline
@@ -43,6 +43,8 @@ Then I gave the raw data a home in Azure. I created a storage account with hiera
 The daily run needs permission to put files there. I created a SAS token for that one container that can only create and write files, not read or delete them, and it expires after a month. The token is stored in GitHub Secrets, so it never appears in the code.
 
 The new script, `upload_to_azure.py`, copies every raw file into a folder for its day, for example `raw/prices/2026-10-07/`. The workflow now fetches the prices, commits them here, and then uploads them to the data lake. After the first run I opened the container in the portal and found all 15 files in their folders, five for each day.
+
+Last, I wrote my first automated tests. They open every raw file and check the row count, the required fields, and that no hour appears twice. GitHub Actions runs them on every push, and the daily run also runs them before it uploads anything to Azure. To be sure the tests really work, I broke one on purpose: the run turned red, GitHub emailed me, and the error named the exact file. Then I fixed it.
 
 ## Data sources
 
