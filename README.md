@@ -6,14 +6,13 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 
 - [x] Day 1: Azure storage basics and first sample of real price data
 - [x] Day 2: Budget alert, Python script for all five price areas, daily run with GitHub Actions
-- [ ] Store the raw files in Azure Data Lake Storage
+- [x] Day 3: Raw files stored in Azure Data Lake Storage, uploaded by the daily run
 - [ ] Automated tests
 - [ ] Add consumption and weather data
 - [ ] Bronze, silver and gold layers in Databricks
 - [ ] Price forecast compared with a simple baseline
 - [ ] Unusual price days explained with SHAP
 - [ ] Power BI dashboard through Microsoft Fabric
-
 
 ## Done so far
 
@@ -34,6 +33,16 @@ After that I moved to Python. I explored the price API in a notebook and checked
 One thing surprised me: on this day the average price in the south (NO2) was about 16 times higher than in the north (NO4).
 
 The last step was a GitHub Actions workflow that runs the script every morning and commits the new files. From now on the data collects itself.
+
+### Day 3 (7 October 2026)
+
+I started by checking yesterday's daily run. It had not started on its own this morning. The workflow file was fine; GitHub just does not promise an exact time for scheduled runs. So I started it by hand and added a second run time later in the day as a backup. Running twice is safe, because the job only commits when something has changed.
+
+Then I gave the raw data a home in Azure. I created a storage account with hierarchical namespace turned on, which makes it Azure Data Lake Storage Gen2: it has real folders instead of one flat list of files. Inside it I made a container called `raw`.
+
+The daily run needs permission to put files there. I created a SAS token for that one container that can only create and write files, not read or delete them, and it expires after a month. The token is stored in GitHub Secrets, so it never appears in the code.
+
+The new script, `upload_to_azure.py`, copies every raw file into a folder for its day, for example `raw/prices/2026-10-07/`. The workflow now fetches the prices, commits them here, and then uploads them to the data lake. After the first run I opened the container in the portal and found all 15 files in their folders, five for each day.
 
 ## Data sources
 
