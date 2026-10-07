@@ -16,7 +16,7 @@ def test_there_are_files():
 
 def test_row_count():
     for name, rows in load_files():
-        assert len(rows) in (23, 24, 25), name
+                assert len(rows) in (99,), name
 
 
 def test_fields():
