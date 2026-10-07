@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.10"
-      - run: pip install requests
+      - run: pip install requests azure-storage-blob
       - run: python fetch_prices.py
       - name: Commit new data
         run: |
@@ -25,3 +25,7 @@ jobs:
           git add data/raw
           git diff --cached --quiet || git commit -m "Add daily prices"
           git push
+      - name: Upload raw files to Azure
+        env:
+          AZURE_STORAGE_SAS_TOKEN: ${{ secrets.AZURE_STORAGE_SAS_TOKEN }}
+        run: python upload_to_azure.py
