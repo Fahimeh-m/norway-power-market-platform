@@ -57,7 +57,7 @@ The biggest difference from prices is timing. Prices are known a day ahead, but 
 
 I wrote four tests for the consumption files, with the same idea as the price tests: row count, required fields and no duplicate hours. All eight tests pass on the real files.
 
-Finally I added the consumption step to the daily run and changed the upload script so that consumption files get their own folder in the data lake. If the consumption API is down one day, the run still commits the prices it already fetched, and then fails so that I get an email. I have not seen a scheduled run with these changes yet, so that is the first thing I will check tomorrow.
+Finally I added the consumption step to the daily run and changed the upload script so that consumption files get their own folder in the data lake. If the consumption API is down one day, the run still commits the prices it already fetched, and then fails so that I get an email. In the afternoon the scheduled run came on its own with these changes: it fetched the prices for the day, passed all eight tests and uploaded 22 files. I opened the container in the portal and found the new `consumption` folder next to `prices`. It was also the first day the prices arrived without me pressing anything.
 
 ## Data sources
 
