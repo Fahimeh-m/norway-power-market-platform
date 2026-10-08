@@ -9,11 +9,11 @@ LOCAL_FOLDER = Path("data/raw")
 token = "".join(os.environ["AZURE_STORAGE_SAS_TOKEN"].split())
 container = ContainerClient(ACCOUNT_URL, CONTAINER, credential=token)
 
-files = sorted(LOCAL_FOLDER.glob("prices_*.json"))
+files = sorted(LOCAL_FOLDER.glob("prices_*.json")) + sorted(LOCAL_FOLDER.glob("consumption_*.json"))
 
 for file in files:
-    day = file.name.split("_")[1]
-    blob_name = f"prices/{day}/{file.name}"
+    kind, day = file.stem.split("_")[:2]
+    blob_name = f"{kind}/{day}/{file.name}"
     container.upload_blob(blob_name, file.read_bytes(), overwrite=True)
     print("Uploaded", blob_name)
 
