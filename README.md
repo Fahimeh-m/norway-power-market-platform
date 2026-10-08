@@ -8,7 +8,8 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 2: Budget alert, Python script for all five price areas, daily run with GitHub Actions
 - [x] Day 3: Raw files stored in Azure Data Lake Storage, uploaded by the daily run
 - [x] Day 3: Data-quality tests in GitHub Actions, on every push and in the daily run
-- [ ] Add consumption and weather data
+- [x] Day 4: Hourly consumption data from Elhub, with its own data-quality tests
+- [ ] Add weather data
 - [ ] Bronze, silver and gold layers in Databricks
 - [ ] Price forecast compared with a simple baseline
 - [ ] Unusual price days explained with SHAP
@@ -46,6 +47,19 @@ The new script, `upload_to_azure.py`, copies every raw file into a folder for it
 
 Last, I wrote my first automated tests. They open every raw file and check the row count, the required fields, and that no hour appears twice. GitHub Actions runs them on every push, and the daily run also runs them before it uploads anything to Azure. To be sure the tests really work, I broke one on purpose: the run turned red, GitHub emailed me, and the error named the exact file. Then I fixed it.
 
+### Day 4 (8 October 2026)
+
+Good news first: the daily run did start on its own yesterday after all. Both scheduled runs came, only about seven hours later than the time I set. For this data that is fine, because the prices for a day are published the day before.
+
+Today I added a second data source: hourly electricity consumption from Elhub. I explored the API in a new notebook first. One request returns all five price areas, and every hour is split into five consumer groups, so a normal day has 120 rows per area.
+
+The biggest difference from prices is timing. Prices are known a day ahead, but consumption is measured afterwards. On 8 October the newest complete day in the API was 6 October. So the new script, `fetch_consumption.py`, asks for the day two days back, checks the row count for every area, and skips the day if the file is already there.
+
+I wrote four tests for the consumption files, with the same idea as the price tests: row count, required fields and no duplicate hours. All eight tests pass on the real files.
+
+Finally I added the consumption step to the daily run and changed the upload script so that consumption files get their own folder in the data lake. If the consumption API is down one day, the run still commits the prices it already fetched, and then fails so that I get an email. I have not seen a scheduled run with these changes yet, so that is the first thing I will check tomorrow.
+
 ## Data sources
 
 - Electricity prices: Strømpriser levert av [Hva koster strømmen.no](https://www.hvakosterstrommen.no). They get the prices from ENTSO-E. Prices are without VAT.
+- Electricity consumption: [Elhub](https://api.elhub.no), open Energy Data API. Hourly consumption per price area and consumer group.
