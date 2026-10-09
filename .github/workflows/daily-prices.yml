@@ -19,6 +19,9 @@ jobs:
       - run: pip install requests azure-storage-blob pytest
       - run: python fetch_prices.py
       - run: python fetch_consumption.py
+      - name: Fetch weather forecast
+        if: always()
+        run: python fetch_weather.py
       - name: Commit new data
         if: always()
         run: |
