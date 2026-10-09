@@ -9,7 +9,8 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 3: Raw files stored in Azure Data Lake Storage, uploaded by the daily run
 - [x] Day 3: Data-quality tests in GitHub Actions, on every push and in the daily run
 - [x] Day 4: Hourly consumption data from Elhub, with its own data-quality tests
-- [ ] Add weather data
+- [x] Day 5: Weather forecast for all five price areas, fetched and stored by the daily run
+- [ ] Data-quality tests for the weather files
 - [ ] Bronze, silver and gold layers in Databricks
 - [ ] Price forecast compared with a simple baseline
 - [ ] Unusual price days explained with SHAP
@@ -59,7 +60,18 @@ I wrote four tests for the consumption files, with the same idea as the price te
 
 Finally I added the consumption step to the daily run and changed the upload script so that consumption files get their own folder in the data lake. If the consumption API is down one day, the run still commits the prices it already fetched, and then fails so that I get an email. In the afternoon the scheduled run came on its own with these changes: it fetched the prices for the day, passed all eight tests and uploaded 22 files. I opened the container in the portal and found the new `consumption` folder next to `prices`. It was also the first day the prices arrived without me pressing anything.
 
+### Day 5 (9 October 2026)
+
+The daily run came on its own for the second day, again in the afternoon. This was the first time it fetched consumption by itself: the log said it saved the file for 7 October, two days back, as planned. I found the new folder in the data lake too.
+
+Then I tried to break the consumption script by asking for tomorrow. Elhub answered with zero rows, the script stopped with an error and saved nothing. That is what I want: a bad answer should never reach the raw folder.
+
+The third data source is weather. I use the Locationforecast API from MET Norway. It needs no key, but every request must say who is asking, so the script sends the project name and my GitHub page in the User-Agent header. I picked one city for each price area: Oslo, Kristiansand, Trondheim, Tromsø and Bergen. The API gives the forecast for the next nine days, and only the current one, so a forecast I do not save today is gone tomorrow. The number of time steps is not fixed (I saw 85 and 86 on the same evening), so `fetch_weather.py` checks for at least 48 instead of an exact number. All times are in UTC.
+
+Last, I added the weather step to the daily run and one line to the upload script. The weather step runs even if an earlier step fails, because this data cannot be fetched later. I started the run by hand once to check: it saved five forecast files and they arrived in a new `weather` folder in the data lake. Tests for the weather files are next.
+
 ## Data sources
 
 - Electricity prices: Strømpriser levert av [Hva koster strømmen.no](https://www.hvakosterstrommen.no). They get the prices from ENTSO-E. Prices are without VAT.
 - Electricity consumption: [Elhub](https://api.elhub.no), open Energy Data API. Hourly consumption per price area and consumer group.
+- Weather forecast: Based on data from [MET Norway](https://api.met.no), Locationforecast API, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). One forecast point per price area.
