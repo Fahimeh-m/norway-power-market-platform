@@ -9,7 +9,11 @@ LOCAL_FOLDER = Path("data/raw")
 token = "".join(os.environ["AZURE_STORAGE_SAS_TOKEN"].split())
 container = ContainerClient(ACCOUNT_URL, CONTAINER, credential=token)
 
-files = sorted(LOCAL_FOLDER.glob("prices_*.json")) + sorted(LOCAL_FOLDER.glob("consumption_*.json"))
+files = (
+    sorted(LOCAL_FOLDER.glob("prices_*.json"))
+    + sorted(LOCAL_FOLDER.glob("consumption_*.json"))
+    + sorted(LOCAL_FOLDER.glob("weather_*.json"))
+)
 
 for file in files:
     kind, day = file.stem.split("_")[:2]
