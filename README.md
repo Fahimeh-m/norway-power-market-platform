@@ -10,7 +10,7 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 3: Data-quality tests in GitHub Actions, on every push and in the daily run
 - [x] Day 4: Hourly consumption data from Elhub, with its own data-quality tests
 - [x] Day 5: Weather forecast for all five price areas, fetched and stored by the daily run
-- [ ] Data-quality tests for the weather files
+- [x] Day 6: Data-quality tests for the weather files
 - [ ] Bronze, silver and gold layers in Databricks
 - [ ] Price forecast compared with a simple baseline
 - [ ] Unusual price days explained with SHAP
@@ -69,6 +69,14 @@ Then I tried to break the consumption script by asking for tomorrow. Elhub answe
 The third data source is weather. I use the Locationforecast API from MET Norway. It needs no key, but every request must say who is asking, so the script sends the project name and my GitHub page in the User-Agent header. I picked one city for each price area: Oslo, Kristiansand, Trondheim, Tromsø and Bergen. The API gives the forecast for the next nine days, and only the current one, so a forecast I do not save today is gone tomorrow. The number of time steps is not fixed (I saw 85 and 86 on the same evening), so `fetch_weather.py` checks for at least 48 instead of an exact number. All times are in UTC.
 
 Last, I added the weather step to the daily run and one line to the upload script. The weather step runs even if an earlier step fails, because this data cannot be fetched later. I started the run by hand once to check: it saved five forecast files and they arrived in a new `weather` folder in the data lake. Tests for the weather files are next.
+
+### Day 6 (10 October 2026)
+
+Today started with an email from GitHub: the scheduled run had failed. The run came earlier than on the other days, and Elhub had no rows yet for 8 October, so the consumption script stopped with the same error I caused on purpose yesterday. The good part is what happened next. The weather step still ran and saved five forecast files, and the prices and forecasts were committed here. The tests and the upload were skipped, so today's files are in this repository but not yet in the data lake. The second run of the day will try again.
+
+Then I wrote four tests for the weather files, in `tests/test_weather_files.py`: there is at least one file, every file has at least 48 time steps, every time step has a time, an air temperature and a wind speed, and no time appears twice. With the price and consumption tests that makes 12, and all of them pass.
+
+To check that the new tests can really fail, I made one too strict on purpose: exactly 85 time steps instead of at least 48. The run turned red and named yesterday's Oslo file, which has 86. Nothing was wrong with the file; my rule was wrong. A test that is too strict fails on healthy data, so I changed it back and the run turned green again.
 
 ## Data sources
 
