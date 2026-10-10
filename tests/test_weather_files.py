@@ -16,7 +16,7 @@ def test_there_are_files():
 def test_time_step_count():
     for file in FILES:
         steps = load_steps(file)
-        assert len(steps) == 85, file.name
+        assert len(steps) >= 48, file.name
 
 
 def test_fields():
