@@ -12,7 +12,7 @@ def fetch_day(day):
     file = RAW_FOLDER / f"consumption_{day}.json"
     if file.exists():
         print(f"Already have {file}")
-        return
+        return True
 
     next_day = date.fromisoformat(day) + timedelta(days=1)
     url = f"https://api.elhub.no/energy-data/v0/price-areas?dataset=CONSUMPTION_PER_GROUP_MBA_HOUR&startDate={day}&endDate={next_day}"
@@ -23,6 +23,10 @@ def fetch_day(day):
     for area in response.json()["data"]:
         counts[area["id"]] = len(area["attributes"]["consumptionPerGroupMbaHour"])
 
+    if all(counts.get(area, 0) == 0 for area in AREAS):
+        print(f"Not yet published: {day}")
+        return False
+
     for area in AREAS:
         if counts.get(area) not in (115, 120, 125):
             raise ValueError(f"{area} on {day}: {counts.get(area)} rows")
@@ -30,9 +34,14 @@ def fetch_day(day):
     RAW_FOLDER.mkdir(parents=True, exist_ok=True)
     file.write_text(response.text, encoding="utf-8")
     print(f"Saved {file}")
+    return True
 
 
 if len(sys.argv) > 1:
     fetch_day(sys.argv[1])
 else:
-    fetch_day(str(date.today() - timedelta(days=2)))
+    for back in range(7, 1, -1):
+        day = str(date.today() - timedelta(days=back))
+        got_it = fetch_day(day)
+        if back == 7 and not got_it:
+            raise ValueError(f"{day} is still missing after 7 days")
