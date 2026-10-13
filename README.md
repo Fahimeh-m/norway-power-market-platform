@@ -11,6 +11,7 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 4: Hourly consumption data from Elhub, with its own data-quality tests
 - [x] Day 5: Weather forecast for all five price areas, fetched and stored by the daily run
 - [x] Day 6: Data-quality tests for the weather files
+- [x] Day 7: Missed consumption days fetched automatically, and sign-in to Azure without stored secrets (OIDC)
 - [ ] Bronze, silver and gold layers in Databricks
 - [ ] Price forecast compared with a simple baseline
 - [ ] Unusual price days explained with SHAP
@@ -77,6 +78,16 @@ Today started with an email from GitHub: the scheduled run had failed. The run c
 Then I wrote four tests for the weather files, in `tests/test_weather_files.py`: there is at least one file, every file has at least 48 time steps, every time step has a time, an air temperature and a wind speed, and no time appears twice. With the price and consumption tests that makes 12, and all of them pass.
 
 To check that the new tests can really fail, I made one too strict on purpose: exactly 85 time steps instead of at least 48. The run turned red and named yesterday's Oslo file, which has 86. Nothing was wrong with the file; my rule was wrong. A test that is too strict fails on healthy data, so I changed it back and the run turned green again.
+
+### Day 7 (13 October 2026)
+
+I came back after two days away and found four failed runs in a row, two on Saturday and two on Sunday. Each time Elhub had no rows yet for the day two days back, so consumption for 8 and 9 October was never saved. Prices and weather forecasts were still fetched every day, because those steps run anyway, and they reached the data lake on Monday when the runs turned green again.
+
+The real problem was in my script: it only ever asked for one day, so a day that came late was lost. I changed `fetch_consumption.py` to look at the last seven days and fetch every day that has no file yet. If Elhub has nothing for a day, the script says so and moves on instead of failing. It still fails if a day is missing after a week, or if only some price areas have data. I started the run by hand, and it saved 8, 9 and 11 October.
+
+Then I removed the last secret from the daily run. Until now the upload used a SAS token stored in GitHub Secrets. Now GitHub Actions signs in to Azure with OpenID Connect. I registered an app in Microsoft Entra ID, added a federated credential that trusts only this repository and its main branch, and gave the app the Storage Blob Data Contributor role on the `raw` container only. On every run GitHub gets a short-lived token, so no password or key is stored anywhere. To be sure the new sign-in was really used, I checked the upload time of today's files in the portal.
+
+Last, I deleted the SAS token from GitHub and rotated the storage key it was signed with, so the old token no longer works. I ran the workflow once more and it was green, so nothing depends on the old token any more.
 
 ## Data sources
 
