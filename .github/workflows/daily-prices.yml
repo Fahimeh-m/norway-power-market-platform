@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   fetch:
@@ -16,7 +17,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.10"
-      - run: pip install requests azure-storage-blob pytest
+      - run: pip install requests azure-storage-blob azure-identity pytest
       - run: python fetch_prices.py
       - run: python fetch_consumption.py
       - name: Fetch weather forecast
@@ -32,6 +33,12 @@ jobs:
           git push
       - name: Check the raw files
         run: pytest
+      - name: Sign in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Upload raw files to Azure
         env:
           AZURE_STORAGE_SAS_TOKEN: ${{ secrets.AZURE_STORAGE_SAS_TOKEN }}
