@@ -12,6 +12,7 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 5: Weather forecast for all five price areas, fetched and stored by the daily run
 - [x] Day 6: Data-quality tests for the weather files
 - [x] Day 7: Missed consumption days fetched automatically, and sign-in to Azure without stored secrets (OIDC)
+- [x] Day 8: Databricks reads the raw files from Azure, with read-only access
 - [ ] Bronze, silver and gold layers in Databricks
 - [ ] Price forecast compared with a simple baseline
 - [ ] Unusual price days explained with SHAP
@@ -88,6 +89,16 @@ The real problem was in my script: it only ever asked for one day, so a day that
 Then I removed the last secret from the daily run. Until now the upload used a SAS token stored in GitHub Secrets. Now GitHub Actions signs in to Azure with OpenID Connect. I registered an app in Microsoft Entra ID, added a federated credential that trusts only this repository and its main branch, and gave the app the Storage Blob Data Contributor role on the `raw` container only. On every run GitHub gets a short-lived token, so no password or key is stored anywhere. To be sure the new sign-in was really used, I checked the upload time of today's files in the portal.
 
 Last, I deleted the SAS token from GitHub and rotated the storage key it was signed with, so the old token no longer works. I ran the workflow once more and it was green, so nothing depends on the old token any more.
+
+### Day 8 (15 October 2026)
+
+I signed up for Databricks Free Edition and tested two things first. The price API answered 200, so Databricks can reach the internet. My storage account answered 409 (public access not permitted), so the road to Azure was open but the door was locked, as it should be.
+
+I created a second app registration in Microsoft Entra ID, only for Databricks, and gave it the Storage Blob Data Reader role on the raw container. The daily workflow can write; Databricks can only read. I made a client secret that expires in 90 days and put it straight into the Databricks secret store, so the notebook only contains IDs.
+
+From a notebook I listed the price files for 14 October: five files, one per price area. Then I tried to upload a test file from Databricks, and Azure refused it. That was the result I wanted.
+
+I didn't use Azure Key Vault. Databricks Free Edition runs outside my Azure subscription and has its own secret store, so Key Vault would only add one more secret to manage.
 
 ## Data sources
 
