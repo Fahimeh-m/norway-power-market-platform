@@ -13,6 +13,7 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 6: Data-quality tests for the weather files
 - [x] Day 7: Missed consumption days fetched automatically, and sign-in to Azure without stored secrets (OIDC)
 - [x] Day 8: Databricks reads the raw files from Azure, with read-only access
+- [x] Day 9: First bronze table in Databricks, for prices
 - [ ] Bronze, silver and gold layers in Databricks
 - [ ] Price forecast compared with a simple baseline
 - [ ] Unusual price days explained with SHAP
@@ -99,6 +100,18 @@ I created a second app registration in Microsoft Entra ID, only for Databricks, 
 From a notebook I listed the price files for 14 October: five files, one per price area. Then I tried to upload a test file from Databricks, and Azure refused it. That was the result I wanted.
 
 I didn't use Azure Key Vault. Databricks Free Edition runs outside my Azure subscription and has its own secret store, so Key Vault would only add one more secret to manage.
+
+### Day 9 (16 October 2026)
+
+The daily run has now been green on its own for two full days, 14 and 15 October, with both runs each day.
+
+Today I built my first bronze table in Databricks. The notebook signs in to Azure with yesterday's read-only app, lists the price files and downloads them. My first count was 72 instead of 60. Because the storage account is a data lake with real folders, the list also returned the 12 day folders. I kept only the names that end with `.json` and got 60 files: five price areas for 12 days.
+
+I didn't change the data. I only added three columns to every row: the price area (taken from the file name), the source file, and the time I loaded it. With the source file, any strange value can be traced back to its file in Azure. The table `bronze_prices` has 1,440 rows, 24 hours for each of the 60 files.
+
+Then I broke it on purpose. I wrote the table again with append instead of overwrite, and it had 2,880 rows: every hour twice. Writing it with overwrite brought it back to 1,440, so running the notebook again does not create duplicates.
+
+I also noticed that the price times are in Norwegian time (+02:00), while the weather forecasts are in UTC. In the silver layer I will turn all times into UTC, so the same hour lines up across sources. The two Databricks notebooks are now in the `databricks` folder.
 
 ## Data sources
 
