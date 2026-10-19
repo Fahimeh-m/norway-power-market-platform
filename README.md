@@ -14,6 +14,7 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 7: Missed consumption days fetched automatically, and sign-in to Azure without stored secrets (OIDC)
 - [x] Day 8: Databricks reads the raw files from Azure, with read-only access
 - [x] Day 9: First bronze table in Databricks, for prices
+- [x] Day 10: The daily run worked on its own for five full days in a row (14 to 18 October)
 - [ ] Bronze, silver and gold layers in Databricks
 - [ ] Price forecast compared with a simple baseline
 - [ ] Unusual price days explained with SHAP
@@ -112,6 +113,12 @@ I didn't change the data. I only added three columns to every row: the price are
 Then I broke it on purpose. I wrote the table again with append instead of overwrite, and it had 2,880 rows: every hour twice. Writing it with overwrite brought it back to 1,440, so running the notebook again does not create duplicates.
 
 I also noticed that the price times are in Norwegian time (+02:00), while the weather forecasts are in UTC. In the silver layer I will turn all times into UTC, so the same hour lines up across sources. The two Databricks notebooks are now in the `databricks` folder.
+
+### Day 10 (19 October 2026)
+
+After a weekend away I checked the Actions tab. Every scheduled run from 14 to 18 October was green, two runs each day. In that time I didn't touch the workflow, the scripts or the secrets. That is five full days in a row without any help from me, and it closes the first part of the project: collecting the data every day.
+
+Next come the bronze tables for consumption and weather. Both APIs return nested JSON, so they need different reading code than the prices.
 
 ## Data sources
 
