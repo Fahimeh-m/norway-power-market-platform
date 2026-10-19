@@ -14,7 +14,7 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 7: Missed consumption days fetched automatically, and sign-in to Azure without stored secrets (OIDC)
 - [x] Day 8: Databricks reads the raw files from Azure, with read-only access
 - [x] Day 9: First bronze table in Databricks, for prices
-- [x] Day 10: The daily run worked on its own for five full days in a row (14 to 18 October)
+- [x] Day 10: Five full days without help (14 to 18 October), bronze tables for consumption and weather, silver prices in UTC
 - [ ] Bronze, silver and gold layers in Databricks
 - [ ] Price forecast compared with a simple baseline
 - [ ] Unusual price days explained with SHAP
@@ -118,7 +118,11 @@ I also noticed that the price times are in Norwegian time (+02:00), while the we
 
 After a weekend away I checked the Actions tab. Every scheduled run from 14 to 18 October was green, two runs each day. In that time I didn't touch the workflow, the scripts or the secrets. That is five full days in a row without any help from me, and it closes the first part of the project: collecting the data every day.
 
-Next come the bronze tables for consumption and weather. Both APIs return nested JSON, so they need different reading code than the prices.
+Then I built bronze tables for consumption and weather. A consumption file holds one day for all five price areas in nested JSON, so I looped through each area and each row: 13 files and 7,800 rows. The price area is already in every row, so I only added the source file and the load time. The consumption times are in Norwegian time too, like the prices.
+
+The weather files were harder. The first forecast steps have precipitation, but steps several days ahead only have temperature, wind and similar values. So in bronze I kept each step's data as a JSON string, unchanged, and I will open it in the silver layer. The table has 4,709 rows from 55 files. The same hour appears in several files, because every day's forecast looks about ten days ahead; the source file column tells them apart.
+
+Last, I started the silver layer with prices. I turned the Norwegian times into UTC with code, kept only the columns I need with clearer names, and removed duplicate hours. The first row from the 5 October file is now 4 October at 22:00 UTC. That is why I didn't just subtract two hours by hand: the date can change, and Norway changes its clock on 25 October. The silver table reads from the bronze table inside Databricks, not from Azure.
 
 ## Data sources
 
