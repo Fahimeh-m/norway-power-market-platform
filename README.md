@@ -16,6 +16,7 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 9: First bronze table in Databricks, for prices
 - [x] Day 10: Five full days without help (14 to 18 October), bronze tables for consumption and weather, silver prices in UTC
 - [ ] Bronze, silver and gold layers in Databricks
+- [ ] Security scans in GitHub Actions: Bandit for the code, pip-audit for the packages
 - [ ] Price forecast compared with a simple baseline
 - [ ] Unusual price days explained with SHAP
 - [ ] Power BI dashboard through Microsoft Fabric
