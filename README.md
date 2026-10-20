@@ -15,7 +15,7 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 8: Databricks reads the raw files from Azure, with read-only access
 - [x] Day 9: First bronze table in Databricks, for prices
 - [x] Day 10: Five full days without help (14 to 18 October), bronze tables for consumption and weather, silver prices in UTC
-- [ ] Bronze, silver and gold layers in Databricks
+- [x] Day 11: Silver tables for consumption and weather, a first gold table, and the error of a simple baseline
 - [ ] Security scans in GitHub Actions: Bandit for the code, pip-audit for the packages
 - [ ] Price forecast compared with a simple baseline
 - [ ] Unusual price days explained with SHAP
@@ -124,6 +124,20 @@ Then I built bronze tables for consumption and weather. A consumption file holds
 The weather files were harder. The first forecast steps have precipitation, but steps several days ahead only have temperature, wind and similar values. So in bronze I kept each step's data as a JSON string, unchanged, and I will open it in the silver layer. The table has 4,709 rows from 55 files. The same hour appears in several files, because every day's forecast looks about ten days ahead; the source file column tells them apart.
 
 Last, I started the silver layer with prices. I turned the Norwegian times into UTC with code, kept only the columns I need with clearer names, and removed duplicate hours. The first row from the 5 October file is now 4 October at 22:00 UTC. That is why I didn't just subtract two hours by hand: the date can change, and Norway changes its clock on 25 October. The silver table reads from the bronze table inside Databricks, not from Azure.
+
+### Day 11 (20 October 2026)
+
+The daily run was green on 19 October too, so it has now run six full days without help.
+
+I started with the silver table for consumption. Like prices, the times became UTC. This time I removed duplicates on three columns, price area, consumer group and hour, because every area has five rows for each hour. The `last_updated_utc` column shows the delay I built the seven-day check for: the data for 5 October was published by Elhub on 7 October.
+
+The weather silver table was the interesting one. I opened the JSON string from bronze and took three values: air temperature, wind speed and precipitation for the next hour. Steps far ahead have no precipitation, so that value is empty there, not zero. Then I counted: 4,709 rows but only 1,600 different area and hour pairs. Every hour is forecast several times, once in each daily file. For example, Bergen at 12:00 UTC on 22 October was forecast in nine files, from 12 to 20 October, and the temperature moved between 10.5 and 12.5 degrees. I kept every forecast and added the date it was made, taken from the file name. The choice of which forecast to use comes later.
+
+Before the gold layer I checked the first and last hour in each table, and found that prices stopped on 16 October. The layers don't update themselves: the bronze table only knew the files from the day I built it. I ran all the notebooks again in order, bronze first and then silver. Now prices go to 20 October (1,920 rows), consumption to 18 October (8,400 rows) and weather has 5,139 rows. Running them on a schedule is a later step.
+
+Then I built the first gold table, `gold_hourly`. Each row is one price area and one hour: the price, the total consumption (the five groups added together), the weather forecast made the day before, and the price for the same hour yesterday. I use the forecast from the day before because that is what a real forecast for tomorrow could know. A newer forecast would be cheating. The table only keeps hours that exist in all three sources, so for now it has 1,070 rows, from 10 to 18 October.
+
+Last, I measured a simple baseline: use yesterday's price for the same hour. The mean absolute error, up to 18 October, is 0.234 NOK per kWh in NO1, 0.274 in NO2, 0.277 in NO3, 0.034 in NO4 and 0.203 in NO5. NO4 looks best, but its prices are also much lower. This is only nine days of data, so the numbers will change. The baseline fails most when the week changes: on Saturday 10 October the night price in NO1 was about 0.15, while the day before it was about 0.90. A model will need to know the day of the week to beat it.
 
 ## Data sources
 
