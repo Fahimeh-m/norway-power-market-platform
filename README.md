@@ -19,6 +19,7 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 12: Seven full days without help, and a star schema in Power BI Desktop with tables for price area and date
 - [ ] Power BI report: DAX measures for prices, consumption and the baseline error, and a first report page
 - [ ] Keep Databricks fed with new data after the Azure free credit ends
+- [ ] Work on this repository from my own computer with Git: clone, branches and pull requests
 - [ ] Security scans in GitHub Actions: Bandit for the code, pip-audit for the packages
 - [ ] Price forecast compared with a simple baseline
 - [ ] Unusual price days explained with SHAP
