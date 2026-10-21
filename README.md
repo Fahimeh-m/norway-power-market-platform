@@ -16,7 +16,8 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 9: First bronze table in Databricks, for prices
 - [x] Day 10: Five full days without help (14 to 18 October), bronze tables for consumption and weather, silver prices in UTC
 - [x] Day 11: Silver tables for consumption and weather, a first gold table, and the error of a simple baseline
-- [ ] Power BI report: a star schema and DAX measures for prices, consumption and the baseline error
+- [x] Day 12: Seven full days without help, and a star schema in Power BI Desktop with tables for price area and date
+- [ ] Power BI report: DAX measures for prices, consumption and the baseline error, and a first report page
 - [ ] Keep Databricks fed with new data after the Azure free credit ends
 - [ ] Security scans in GitHub Actions: Bandit for the code, pip-audit for the packages
 - [ ] Price forecast compared with a simple baseline
@@ -140,6 +141,18 @@ Before the gold layer I checked the first and last hour in each table, and found
 Then I built the first gold table, `gold_hourly`. Each row is one price area and one hour: the price, the total consumption (the five groups added together), the weather forecast made the day before, and the price for the same hour yesterday. I use the forecast from the day before because that is what a real forecast for tomorrow could know. A newer forecast would be cheating. The table only keeps hours that exist in all three sources, so for now it has 1,070 rows, from 10 to 18 October.
 
 Last, I measured a simple baseline: use yesterday's price for the same hour. The mean absolute error, up to 18 October, is 0.234 NOK per kWh in NO1, 0.274 in NO2, 0.277 in NO3, 0.034 in NO4 and 0.203 in NO5. NO4 looks best, but its prices are also much lower. This is only nine days of data, so the numbers will change. The baseline fails most when the week changes: on Saturday 10 October the night price in NO1 was about 0.15, while the day before it was about 0.90. A model will need to know the day of the week to beat it.
+
+### Day 12 (21 October 2026)
+
+Both scheduled runs on 20 October were green as well, so the daily run has now worked seven full days without help, from 14 to 20 October.
+
+Today I started the report side. I moved Power BI forward in my plan and used Power BI Desktop instead of Microsoft Fabric for now, because Desktop is free and runs on my own computer. I exported the gold table from Databricks as a CSV file with all 1,070 rows and loaded it with Power Query. I didn't refresh the layers first, so the data still ends on 18 October.
+
+The first thing I found was a time trap. In Databricks the first row is NO1 at 05:00 UTC on 14 October, but the Power BI preview showed 07:00. Power BI had quietly turned the UTC times into my computer's local time. I kept the time zone when reading the column and then removed only the zone label, so 05:00 stays 05:00. To check, I counted the different hours: 214, the same as in the gold table. If I had missed this, the hours would have moved again when Norway changes its clock on 25 October. I also rounded consumption to whole kWh, because adding the five consumer groups had left tiny decimals like 3216954.2139999997.
+
+Then I built a star schema. The fact table, `fact_hourly`, has the 1,070 hourly rows with price, consumption, weather and yesterday's price. Around it are two dimension tables: `dim_area`, with the five price areas and readable names like "North (Tromsø)", and `dim_date`, with the nine dates, the day of the week and a weekend flag. Four of the nine days are weekend days. I added the day of the week because of yesterday's baseline, which failed most on a Saturday. Both relationships are many-to-one, from the fact table to each dimension. Power BI found the area relationship by itself; the date relationship I made by hand.
+
+The report file stays on my computer for now. I will add it here when the first page with DAX measures is ready.
 
 ## Data sources
 
