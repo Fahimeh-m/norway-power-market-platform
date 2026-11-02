@@ -55,7 +55,8 @@ I set a budget alert on Day 2, but when I checked on 31 October it was no longer
 
 ## After the free credit ends
 
-My plan:
+The sections above describe the setup as it was on 31 October.
 
-- Remove the Azure sign-in and upload steps from the daily run, so it keeps collecting prices, consumption and weather into this repository.
-- Let the bronze notebooks in Databricks read the new files from this repository instead of from Azure. The tables already in Databricks stay as they are.
+Done on 2 November 2026: I removed the Azure sign-in and upload steps from the daily run, so it keeps collecting prices, consumption and weather into this repository. New files no longer go to Azure.
+
+My plan: let the bronze notebooks in Databricks read the new files from this repository instead of from Azure. The tables already in Databricks stay as they are.
