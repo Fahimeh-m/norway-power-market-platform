@@ -17,6 +17,7 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 10: Five full days without help (14 to 18 October), bronze tables for consumption and weather, silver prices in UTC
 - [x] Day 11: Silver tables for consumption and weather, a first gold table, and the error of a simple baseline
 - [x] Day 12: Seven full days without help, and a star schema in Power BI Desktop with tables for price area and date
+- [x] Day 13: Azure screenshots and notes, 19 days without help, and the daily run moved off Azure
 - [ ] Power BI report: DAX measures for prices, consumption and the baseline error, and a first report page
 - [ ] Keep Databricks fed with new data after the Azure free credit ends
 - [ ] Work on this repository from my own computer with Git: clone, branches and pull requests
@@ -154,6 +155,16 @@ The first thing I found was a time trap. In Databricks the first row is NO1 at 0
 Then I built a star schema. The fact table, `fact_hourly`, has the 1,070 hourly rows with price, consumption, weather and yesterday's price. Around it are two dimension tables: `dim_area`, with the five price areas and readable names like "North (Tromsø)", and `dim_date`, with the nine dates, the day of the week and a weekend flag. Four of the nine days are weekend days. I added the day of the week because of yesterday's baseline, which failed most on a Saturday. Both relationships are many-to-one, from the fact table to each dimension. Power BI found the area relationship by itself; the date relationship I made by hand.
 
 The report file stays on my computer for now. I will add it here when the first page with DAX measures is ready.
+
+### Day 13 (2 November 2026)
+
+The Azure free credit ends in the next few days, so I got the project ready for that. On 31 October I took screenshots of the Azure setup and wrote short notes about them in `docs/azure/`.
+
+Before changing anything, I checked the Actions tab. The scheduled runs were green up to 1 November, so the daily run has worked 19 full days without help, from 14 October.
+
+Today I removed the Azure sign-in and upload steps from the daily workflow. I also removed the `id-token: write` permission and the Azure packages, because the workflow no longer needs them. Then I started the run by hand, and it was green. The data keeps collecting in this repository, but new files no longer go to the data lake.
+
+Databricks still reads the older files from Azure. Moving the bronze notebooks to another source is the next step for that part.
 
 ## Data sources
 
