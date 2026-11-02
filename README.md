@@ -164,6 +164,10 @@ Before changing anything, I checked the Actions tab. The scheduled runs were gre
 
 Today I removed the Azure sign-in and upload steps from the daily workflow. I also removed the `id-token: write` permission and the Azure packages, because the workflow no longer needs them. Then I started the run by hand, and it was green. The data keeps collecting in this repository, but new files no longer go to the data lake.
 
+Before the credit ended, I ran the Databricks notebooks in order one more time. Prices now reach 1 November (3,365 rows), consumption reaches 30 October (15,625 rows), and `gold_hourly` has 2,515 rows, from 10 to 30 October. The price and consumption row counts match the extra hour on 25 October, when Norway changed its clock.
+
+The baseline error, up to 30 October, is 0.261 NOK per kWh in NO1, 0.305 in NO2, 0.245 in NO3, 0.033 in NO4 and 0.238 in NO5. This is still only three weeks of data.
+
 Databricks still reads the older files from Azure. Moving the bronze notebooks to another source is the next step for that part.
 
 ## Data sources
