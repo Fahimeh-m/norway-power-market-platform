@@ -18,9 +18,8 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 11: Silver tables for consumption and weather, a first gold table, and the error of a simple baseline
 - [x] Day 12: Seven full days without help, and a star schema in Power BI Desktop with tables for price area and date
 - [x] Day 13: Azure screenshots and notes, 19 days without help, and the daily run moved off Azure
-- [ ] Power BI report: DAX measures for prices, consumption and the baseline error, and a first report page
+- [x] Day 14: Git on my own computer with a branch and a pull request, and a first Power BI report page with DAX measures
 - [ ] Keep Databricks fed with new data after the Azure free credit ends
-- [ ] Work on this repository from my own computer with Git: clone, branches and pull requests
 - [ ] Security scans in GitHub Actions: Bandit for the code, pip-audit for the packages
 - [ ] Price forecast compared with a simple baseline
 - [ ] Unusual price days explained with SHAP
@@ -169,6 +168,18 @@ Before the credit ended, I ran the Databricks notebooks in order one more time. 
 The baseline error, up to 30 October, is 0.261 NOK per kWh in NO1, 0.305 in NO2, 0.245 in NO3, 0.033 in NO4 and 0.238 in NO5. This is still only three weeks of data.
 
 Databricks still reads the older files from Azure. Moving the bronze notebooks to another source is the next step for that part.
+
+### Day 14 (3 November 2026)
+
+Today I started working on this repository from my own computer with Git. Until now, I had made every change on the GitHub website. I installed Git, set a private commit email and cloned the repository into a new folder, because my old local folder was not connected to GitHub. The daily run keeps adding commits here, so I pull before I push. That mattered today, because the run added new files while I was working.
+
+I added DAX measures to the Power BI report for average price, price volatility, total consumption and baseline error. For the baseline error, I left out rows with no price from the day before. The results by price area match the baseline numbers from Databricks.
+
+The first report page covers 10 to 30 October. South has the highest average price, 1.47 NOK per kWh, and North has the lowest, 0.23. Around 24 October, prices in South, East and West fell sharply and came close to Central. I don't know the reason yet.
+
+I made these report changes on a branch and merged them through a pull request.
+
+![First Power BI report page](docs/powerbi/01_report_page.png)
 
 ## Data sources
 
