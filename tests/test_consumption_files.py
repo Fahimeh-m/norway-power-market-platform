@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-RAW_FOLDER = Path("data/raw")
+RAW_FOLDER = Path("data/raw/consumption")
 AREAS = ["NO1", "NO2", "NO3", "NO4", "NO5"]
 FIELDS = {"startTime", "endTime", "priceArea", "consumptionGroup", "quantityKwh"}
 

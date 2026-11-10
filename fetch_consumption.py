@@ -5,7 +5,7 @@ from pathlib import Path
 import requests
 
 AREAS = ["NO1", "NO2", "NO3", "NO4", "NO5"]
-RAW_FOLDER = Path("data/raw")
+RAW_FOLDER = Path("data/raw/consumption")
 
 
 def fetch_day(day):

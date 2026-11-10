@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-FILES = sorted(Path("data/raw").glob("weather_*.json"))
+FILES = sorted(Path("data/raw/weather").glob("weather_*.json"))
 
 
 def load_steps(file):
