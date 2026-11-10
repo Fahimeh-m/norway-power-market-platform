@@ -195,3 +195,7 @@ Then I sorted the raw files. Until now all 385 of them were in one flat `data/ra
 - Electricity prices: Strømpriser levert av [Hva koster strømmen.no](https://www.hvakosterstrommen.no). They get the prices from ENTSO-E. Prices are without VAT.
 - Electricity consumption: [Elhub](https://api.elhub.no), open Energy Data API. Hourly consumption per price area and consumer group.
 - Weather forecast: Based on data from [MET Norway](https://api.met.no), Locationforecast API, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). One forecast point per price area.
+
+## Tools
+
+Python (requests, pytest), GitHub Actions, Git, Azure Data Lake Storage Gen2, Microsoft Entra ID (OIDC), Databricks (PySpark), Power BI Desktop (Power Query, DAX)
