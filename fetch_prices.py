@@ -8,7 +8,7 @@ AREAS = ["NO1", "NO2", "NO3", "NO4", "NO5"]
 
 
 def fetch_day(day):
-    os.makedirs("data/raw", exist_ok=True)
+    os.makedirs("data/raw/prices", exist_ok=True)
     for area in AREAS:
         url = f"https://www.hvakosterstrommen.no/api/v1/prices/{day[:4]}/{day[5:]}_{area}.json"
         response = requests.get(url)
@@ -16,7 +16,7 @@ def fetch_day(day):
         rows = response.json()
         if len(rows) not in (23, 24, 25):
             raise ValueError(f"{area} {day}: unexpected row count {len(rows)}")
-        with open(f"data/raw/prices_{day}_{area}.json", "w", encoding="utf-8") as f:
+        with open(f"data/raw/prices/prices_{day}_{area}.json", "w", encoding="utf-8") as f:
             f.write(response.text)
         print(f"saved {area} {day}: {len(rows)} rows")
 

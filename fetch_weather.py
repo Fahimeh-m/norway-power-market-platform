@@ -31,7 +31,7 @@ def get_json_with_retry(url, attempts=3, wait=10):
 
 def fetch_today():
     day = date.today().isoformat()
-    folder = Path("data/raw")
+    folder = Path("data/raw/weather")
     folder.mkdir(parents=True, exist_ok=True)
 
     for area, (lat, lon) in PLACES.items():
