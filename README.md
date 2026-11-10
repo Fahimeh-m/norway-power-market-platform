@@ -19,6 +19,7 @@ A small data project about hourly electricity prices in Norway, built on Azure. 
 - [x] Day 12: Seven full days without help, and a star schema in Power BI Desktop with tables for price area and date
 - [x] Day 13: Azure screenshots and notes, 19 days without help, and the daily run moved off Azure
 - [x] Day 14: Git on my own computer with a branch and a pull request, and a first Power BI report page with DAX measures
+- [x] Day 15: Retry for the weather API, and the raw files sorted into one folder per source
 - [ ] Keep Databricks fed with new data after the Azure free credit ends
 - [ ] Security scans in GitHub Actions: Bandit for the code, pip-audit for the packages
 - [ ] Price forecast compared with a simple baseline
@@ -180,6 +181,14 @@ The first report page covers 10 to 30 October. South has the highest average pri
 I made these report changes on a branch and merged them through a pull request.
 
 ![First Power BI report page](docs/powerbi/01_report_page.png)
+
+### Day 15 (10 November 2026)
+
+On 4 November the daily run failed in the weather step. MET Norway had sent a response for Bergen (NO5) that was cut off in the middle, so the script could not read it as JSON. The other four areas were already saved. I first pressed "Re-run", but that repeats the old commit, and because the failed run had already pushed new files, its push was rejected. "Run workflow" starts from the newest commit, and it was green.
+
+To make this less likely to happen again, I added a retry to `fetch_weather.py`. If the request fails or the answer is not valid JSON, the script waits 10 seconds and tries again, then 20 seconds. After the third failed try it still stops with an error, so I still get an email when something is really wrong. I made the change on a branch and merged it through a pull request after the tests passed. A manual run then saved all five forecasts on the first try.
+
+Then I sorted the raw files. Until now all 385 of them were in one flat `data/raw` folder. Now they are in `data/raw/prices`, `data/raw/consumption` and `data/raw/weather`, the same layout the data lake had. Before moving anything, I searched the repository for every place that uses the folder and found six: the three fetch scripts and the three test files. The workflow needed no change, because `git add data/raw` includes subfolders. I turned off the scheduled run during the change, so it could not write new files to the old place. I moved the files with `git mv`, so Git shows them as renames and keeps their history, and counted them before and after: 185 price files, 35 consumption files and 165 weather files. Each test file checks that it finds at least one file, so a wrong path would have turned the tests red instead of passing on an empty folder. After the merge I turned the schedule back on and ran it once by hand. The scripts found the existing consumption and weather files in the new folders and skipped them.
 
 ## Data sources
 
