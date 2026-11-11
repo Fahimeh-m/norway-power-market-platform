@@ -1,6 +1,6 @@
 # Azure part of the project
 
-This project ran on the Azure free account, and the free credit ended in early November 2026. Before it ended, I took screenshots of everything I built in Azure, so the setup stays visible after the resources are gone. The screenshots were taken on 31 October 2026.
+This project ran on the Azure free account, and the free credit ended in early November 2026. Before it ended, I took screenshots of everything I built in Azure, so the setup stays visible after the resources are gone. 
 
 ## Resource group
 
