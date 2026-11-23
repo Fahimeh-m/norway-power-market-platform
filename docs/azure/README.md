@@ -58,3 +58,5 @@ I set a budget alert at the start of the project, but when I checked on 31 Octob
 On 2 November 2026 I removed the Azure sign-in and upload steps from the daily run. It keeps collecting prices, consumption and weather into this repository, but new files no longer go to Azure.
 
 Next: the bronze notebooks in Databricks will read the raw files from this repository instead of from Azure, and the Databricks client secret will be removed.
+
+© 2026 Fahimeh Mottaghi. All rights reserved.
