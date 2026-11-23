@@ -72,3 +72,5 @@ An end-to-end data pipeline for hourly electricity prices, consumption and weath
 ## Tools
 
 Python (requests, pytest), GitHub Actions, Git, Azure Data Lake Storage Gen2, Microsoft Entra ID (OIDC), Databricks (PySpark), Power BI Desktop (Power Query, DAX)
+
+© 2026 Fahimeh Mottaghi. All rights reserved.
